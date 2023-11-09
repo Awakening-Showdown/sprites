@@ -41,6 +41,33 @@ foreach_rule(
     "build/item-minisprites-trimmed/%b"
 )
 
+-- Gen 9
+
+foreach_rule(
+    "src/gen9species/*.png",
+    {
+        display="96x96 %f",
+        -- TODO, add customizable compression for gif
+        -- ... or investigate using webp instead of both png/gif here
+        "magick convert %f -trim +repage -resize 90x90 %o",
+        "gifsicle -O3 -b %o"
+    },
+    "build/gen9-modelslike/%B.gif"
+)
+
+-- Gen 5 CAPs...
+
+foreach_rule(
+    "src/sprites/gen5/*.png",
+    {
+        -- TODO, add customizable compression for gif
+        -- ... or investigate using webp instead of both png/gif here
+        "magick convert %f %o",
+        "gifsicle -O3 -b %o"
+    },
+    "build/gen5-gif/%B.gif"
+)
+
 -- PS spritesheet
 
 rule(
@@ -92,9 +119,34 @@ rule(
     "build/ps/pokemonicons-pokeball-sheet.png"
 )
 
+-- Smogdex minisprites (webp)
+
+foreach_rule(
+    spriteglob({"src/minisprites/pokemon/gen6/*", "src/minisprites/items/*"}, {a = false}),
+    {
+        display="webp minisprite %f",
+        "cwebp -z 9 %f -o %o"
+    },
+    "build/smogon/minisprites/%B.webp"
+)
+
+-- Smogdex spritesheet
+
+
+rule(
+    spriteglob({"src/minisprites/pokemon/gen6/*", "src/minisprites/items/*"}, {a = false}),
+    {
+        display="smogdex sheet",
+        "node tools/smogdexspritesheet --image build/smogon/spritesheet.png --stylesheet build/smogon/spritesheet.css -- %f",
+        "cwebp -z 9 build/smogon/spritesheet.png -o build/smogon/spritesheet.webp",
+        "rm build/smogon/spritesheet.png"
+    },
+    {"build/smogon/spritesheet.webp", "build/smogon/spritesheet.css"}
+)
+
 -- Smogdex social images
 
-local input = spriteglob("src/models/*", {b = false, s = false})
+local input = spriteglob({"src/models/*", "src/gen9species/*"}, {b = false, s = false})
 
 foreach_rule(
     input,

@@ -14,6 +14,7 @@ This project depends on
 - [pnpm](https://pnpm.js.org)
 - [node.js](https://nodejs.org) >= 13
 - [wine](https://www.winehq.org/) (optional)
+- cwebp
 
 ### Windows
 
@@ -22,7 +23,7 @@ Windows binaries of these dependencies can be found on the download pages of the
 ### Linux
 
 ```
-$ sudo apt install nodejs imagemagick advancecomp optipng pngquant wine
+$ sudo apt install nodejs imagemagick advancecomp optipng pngquant wine webp
 $ sudo npm install -g pnpm
 ```
 
@@ -73,7 +74,6 @@ Build settings are configurable in `tup.config`.
 - `CONFIG_DEFAULT_OPTIPNG`: Command line to pass to `optipng`.
 - `CONFIG_DEFAULT_ADVPNG`: Command line to pass to `advpng`.
 - `CONFIG_DEFAULT_PNGQUANT`: Command line to pass to `pngquant`.
-- `CONFIG_DEFAULT_DEFLOPT`: `true`, `false`, or blank
 
 There are src-specific versions of these settings:
 
@@ -87,16 +87,11 @@ For example, these settings reflect the compression settings for the files chaos
 ```
 CONFIG_DEFAULT_OPTIPNG=-o7
 CONFIG_DEFAULT_ADVPNG=-z4 -i5000
-CONFIG_DEFAULT_DEFLOPT=true
 ```
 
 ## Gotchas
 
 - Tup, like Git, tracks files, not directories. If you `readdir()` and forget to declare a dependency it won't catch it, like it would for `read()`. You can work around this by having build tools `stat()` any filenames they acquire.
-
-- Using DeflOpt requires a custom build of tup. Checkout the repo and `git am vendor/tup-remove-fuse-context-check.patch`, and run with environment variable `TUP_NO_NAMESPACING=1`.
-
-- DeflOpt performance can suffer under Wine due to repeatedly starting/shutting down `wineserver`. You can specify the server timeout with `wineserver -p<n>`, where `n` is the # of seconds (default 3). If you don't specify `n` it never shuts down. Sometimes wine will hang so you may want to instead pick something high like 30 seconds.
 
 ## License
 
